@@ -87,7 +87,6 @@ bool WebHandlerClientData::handlePost(CivetServer *server, struct mg_connection 
         int bytesRead = mg_read(conn, buf, sizeof(buf));
         while (bytesRead > 0) {
             reqBody.append(buf, bytesRead);
-
             bytesRead = mg_read(conn, buf, sizeof(buf));
         }
         if (reqBody.size() > 2) {
@@ -98,12 +97,15 @@ bool WebHandlerClientData::handlePost(CivetServer *server, struct mg_connection 
         //oFile << jsonResp;
         oFile.write(reqBody.c_str(), reqBody.size());
 
-        mg_printf(conn, "HTTP/1.1 201 OK\r\n",
+        mg_printf(conn, "HTTP/1.1 201 OK\r\n"
+						"Access-Control-Allow-Origin: *\r\n"
                         "Content-Type: application/json\r\n\r\n");
     }
     catch (json::parse_error &e)
     {
-        mg_printf(conn, "HTTP/1.1 500 Internal Server Error\r\nContent-Type: application/json\r\n\r\n");
+        mg_printf(conn, "HTTP/1.1 500 Internal Server Error\r\n"
+                        "Access-Control-Allow-Origin: *\r\n"
+                        "Content-Type: application/json\r\n\r\n");
         std::cerr << e.what() << std::endl;
         jsonResp["msg"] = e.what();
     }
@@ -133,7 +135,9 @@ bool WebHandlerClientData::handGet_json(CivetServer* server, struct mg_connectio
     }
     catch (json::parse_error &e)
     {
-        mg_printf(conn, "HTTP/1.1 500 Internal Server Error\r\nContent-Type: application/json\r\n\r\n");
+        mg_printf(conn, "HTTP/1.1 500 Internal Server Error\r\n"
+            "Access-Control-Allow-Origin: *\r\n"
+            "Content-Type: application/json\r\n\r\n");
         std::cerr << e.what() << std::endl;
         jsonResp["msg"] = e.what();
     }
