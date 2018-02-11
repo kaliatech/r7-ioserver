@@ -89,17 +89,25 @@ bool WebHandlerClientData::handlePost(CivetServer *server, struct mg_connection 
             reqBody.append(buf, bytesRead);
             bytesRead = mg_read(conn, buf, sizeof(buf));
         }
-        if (reqBody.size() > 2) {
-            reqBody.erase(1, 2);
-        }
+        //if (reqBody.size() > 2) {
+        //    reqBody.erase(1, 2);
+        //}
+
+
 
         std::ofstream oFile(("data/" + baseFilename + ".json").c_str());
-        //oFile << jsonResp;
-        oFile.write(reqBody.c_str(), reqBody.size());
+        //oFile.write(reqJson.dump(2).c_str(), reqBody.size());
+
+        //json reqJson(reqBody);
+        json reqJson = json::parse(reqBody);
+        oFile << reqJson.dump(2);
 
         mg_printf(conn, "HTTP/1.1 201 OK\r\n"
-						"Access-Control-Allow-Origin: *\r\n"
-                        "Content-Type: application/json\r\n\r\n");
+                "Access-Control-Allow-Origin: *\r\n"
+                "Content-Type: application/json\r\n\r\n");
+
+        mg_printf(conn, reqJson.dump().c_str());
+
     }
     catch (json::parse_error &e)
     {
