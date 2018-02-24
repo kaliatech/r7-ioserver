@@ -12,6 +12,7 @@
 
 #include "ioserver/IoServerConfig.h"
 #include "ioserver/WebHandlerClientData.h"
+#include "ioserver/WebHandlerServoMove.h"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -80,6 +81,10 @@ int main(int argc, char *argv[])
 
     WebHandlerClientData webHandlerClientData;
     server.addHandler(DATA_URI, webHandlerClientData);
+
+    WebHandlerServoMove webHandlerServoMove;
+    server.addHandler("/mbp", webHandlerServoMove);
+
 
     ExitHandler h_exit;
     server.addHandler(EXIT_URI, h_exit);

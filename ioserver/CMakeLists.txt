@@ -34,6 +34,7 @@ SET(HEADERS_IOSERVER
     "include/ioserver/IoServerConfig.h"
     "include/ioserver/IoServerWebUtils.h"
 	"include/ioserver/WebHandlerClientData.h"
+	"include/ioserver/WebHandlerServoMove.h"
 )
 
 set(SOURCES_CIVETWEB
@@ -47,6 +48,8 @@ set(SOURCES_IOSERVER
 	"src/ioserver/IoServerConfig.cpp"
 	"src/ioserver/IoServer.cpp"
 	"src/ioserver/WebHandlerClientData.cpp"
+	"src/ioserver/WebHandlerServoMove.cpp"
+	
 )
 
 # add_definitions(-D_TIMESPEC_DEFINED)
