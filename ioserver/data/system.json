@@ -1,8 +1,0 @@
-{
-"controllerTypes": [
-	"Pololu-Maestro"
-],
-"ioConnectionTyoes": [
-	"Serial-ASIO"
-]
-}

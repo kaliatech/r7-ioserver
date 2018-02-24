@@ -1,13 +1,1 @@
-[{
-  "id": "primary-1",
-  "type": "pololu-maestro",
-  "connType": "SERIAL",
-  "connStr": "COM1"
-},
-{
-  "id": "primary-2",
-  "type": "pololu-maestro",
-  "connType": "SERIAL",
-  "connStr": "COM2"
-}
-]
+[]
