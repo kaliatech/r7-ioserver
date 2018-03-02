@@ -1,7 +1,10 @@
 cmake_minimum_required (VERSION 3.10)
 project (r7-ioserver)
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_CXX_FLAGS "-D_SCL_SECURE_NO_WARNINGS /EHsc")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 

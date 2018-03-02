@@ -3,6 +3,8 @@
 
 #include "civetweb/CivetServer.h"
 
+#include "ioserver/IoController.h"
+
 class WebHandlerServoMove : public CivetHandler
 {
 public:
@@ -16,6 +18,7 @@ public:
 
 protected:
 private:
+    r7::ioserver::IoController ioController;
 };
 
 #endif // WebHandlerServoMove_H

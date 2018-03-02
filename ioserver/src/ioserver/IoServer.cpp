@@ -10,6 +10,7 @@
 #include <string>
 #include <thread>
 
+#include "ioserver/IoController.h"
 #include "ioserver/IoServerConfig.h"
 #include "ioserver/WebHandlerClientData.h"
 #include "ioserver/WebHandlerServoMove.h"
@@ -84,7 +85,6 @@ int main(int argc, char *argv[])
 
     WebHandlerServoMove webHandlerServoMove;
     server.addHandler("/mbp", webHandlerServoMove);
-
 
     ExitHandler h_exit;
     server.addHandler(EXIT_URI, h_exit);

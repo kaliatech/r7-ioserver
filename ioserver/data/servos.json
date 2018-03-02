@@ -1,0 +1,10 @@
+[{
+  "id": "x",
+  "controllerId": "primary-1",
+  "group":"Pan/Tilt"
+},
+{
+  "id": "y",
+  "controllerId": "primary-1",
+  "group":"Pan/Tilt"
+}]
