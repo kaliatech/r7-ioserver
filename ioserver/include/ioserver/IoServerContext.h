@@ -4,7 +4,6 @@
 #include <boost/thread/mutex.hpp>
 
 namespace r7 {
-namespace ioserver {
 
 
 class IoServerContext
@@ -29,5 +28,5 @@ public:
     static void error(const std::string& msg);
 };
 }
-}
+
 

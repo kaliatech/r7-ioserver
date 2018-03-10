@@ -1,21 +1,23 @@
-#include "ioserver/IoController.h"
+#include "SerialController.h"
+
+#include <boost/shared_ptr.hpp>
+#include <boost/thread.hpp>
 
 #include "ioserver/IoServerContext.h"
 #include "ioserver/serialport/AsyncSerialPort.h"
 
 namespace r7 {
-namespace ioserver {
 
-IoController::IoController() :
+SerialController::SerialController() :
     serialPort(boost::shared_ptr<AsyncSerialPort>(new AsyncSerialPort()))
 {
     serialPortIOThread = new boost::thread(boost::bind(&AsyncSerialPort::run_io_service, serialPort));
 
-    serialPort->eventSignal.connect(boost::bind(&IoController::onSerialPortEvent, this, _1));
+    serialPort->eventSignal.connect(boost::bind(&SerialController::onSerialPortEvent, this, _1));
 
 }
 
-void IoController::doTest() {
+void SerialController::doTest() {
     if (!serialPort->isOpen()) {
 
         try {
@@ -42,7 +44,7 @@ void IoController::doTest() {
 }
 
 
-void IoController::onSerialPortEvent(boost::shared_ptr<AsyncSerialEvent> evt) {
+void SerialController::onSerialPortEvent(boost::shared_ptr<AsyncSerialEvent> evt) {
 
     switch (evt->getType())
     {
@@ -62,5 +64,4 @@ void IoController::onSerialPortEvent(boost::shared_ptr<AsyncSerialEvent> evt) {
 
 }
 
-}
 }

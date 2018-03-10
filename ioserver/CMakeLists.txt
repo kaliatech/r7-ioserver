@@ -36,8 +36,8 @@ SET(HEADERS_MISC
 #    "include/ioserver/IoServerConfig.h"
 #    "include/ioserver/IoServerContext.h"
 #    "include/ioserver/IoServerWebUtils.h"
-#    "include/ioserver/WebHandlerClientData.h"
-#    "include/ioserver/WebHandlerServoMove.h"
+#    "include/ioserver/ClientDataHandler.h"
+#    "include/ioserver/ServoMoveHandler.h"
 #    "include/ioserver/serialport/AsyncSerialEvent.h"
 #    "include/ioserver/serialport/AsyncSerialPort.h"
 #)
@@ -57,8 +57,8 @@ file(GLOB_RECURSE SOURCES_IOSERVER "*.cpp" "*.hpp")
 #	"src/ioserver/IoServerConfig.cpp"
 #        "src/ioserver/IoServerContext.cpp"
 #	"src/ioserver/IoServer.cpp"
-#	"src/ioserver/WebHandlerClientData.cpp"
-#	"src/ioserver/WebHandlerServoMove.cpp"
+#	"src/ioserver/ClientDataHandler.cpp"
+#	"src/ioserver/ServoMoveHandler.cpp"
 #        "src/ioserver/serialport/AsyncSerialEvent.cpp"
 #        "src/ioserver/serialport/AsyncSerialPort.cpp"
 #)

@@ -1,4 +1,4 @@
-#include "ioserver/WebHandlerServoMove.h"
+#include "ServoMoveHandler.h"
 
 #include "nlohmann-json/json.hpp"
 #include <limits>
@@ -10,37 +10,41 @@
 
 #include "pystring/pystring.h"
 
+#include "../MimeType.h"
+
+#include "../../../controllers/SerialController.h"
+
 // for convenience
 using json = nlohmann::json;
 
-WebHandlerServoMove::WebHandlerServoMove() :
-    ioController()
+namespace r7 {
+
+ServoMoveHandler::ServoMoveHandler() :
+    ioController (new SerialController())
 {
+    // this->ioController = new SerialController();
 }
 
-bool WebHandlerServoMove::handleGet(CivetServer *server, struct mg_connection *conn)
+bool ServoMoveHandler::handleGet(CivetServer *server, struct mg_connection *conn)
 {
-    const struct mg_request_info *req_info = mg_get_request_info(conn);
+    //    const struct mg_request_info *req_info = mg_get_request_info(conn);
 
-    if (!strcmp(req_info->request_method, "OPTIONS")) {
-        return false;
-    }
+    //    if (!strcmp(req_info->request_method, "OPTIONS")) {
+    //        return false;
+    //    }
 
     return false;
 }
 
-bool WebHandlerServoMove::handlePost(CivetServer *server, struct mg_connection *conn) {
+bool ServoMoveHandler::handlePost(CivetServer *server, struct mg_connection *conn) {
 
     const struct mg_request_info *req_info = mg_get_request_info(conn);
+    //    if (!strcmp(req_info->request_method, "OPTIONS")) {
+    //        return false;
+    //    }
 
-    if (!strcmp(req_info->request_method, "OPTIONS")) {
-        return false;
-    }
 
-    mg_printf(conn, "HTTP/1.1 201 OK\r\n"
-                    "Access-Control-Allow-Origin: *\r\n"
-                    "Access-Control-Max-Age: 86400\r\n"
-                    "Content-Type: application/json\r\n\r\n");
+    this->printCommonHeaders(conn, 201, r7::MimeType::APPLICATION_JSON);
 
     std::vector<std::string> tokens;
     pystring::split(req_info->request_uri, tokens, "/");
@@ -58,12 +62,13 @@ bool WebHandlerServoMove::handlePost(CivetServer *server, struct mg_connection *
 
     mg_printf(conn, jsonResp.dump(2).c_str());
 
-    ioController.doTest();
+    ioController->doTest();
 
     return true;
 }
 
-WebHandlerServoMove::~WebHandlerServoMove()
+ServoMoveHandler::~ServoMoveHandler()
 {
-    //dtor
+    delete this->ioController;
+}
 }

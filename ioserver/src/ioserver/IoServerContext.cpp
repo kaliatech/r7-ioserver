@@ -3,7 +3,6 @@
 #include <boost/thread.hpp>
 
 namespace r7 {
-namespace ioserver {
 
 const char* IoServerContext::LevelNames[] = { "DEBUG", "INFO", "ERROR" };
 
@@ -45,4 +44,4 @@ void IoServerContext::error(const std::string &msg)
 }
 
 }
-}
+

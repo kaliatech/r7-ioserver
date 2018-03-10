@@ -5,7 +5,7 @@ namespace r7 {
 class WebServerProcess
 {
 public:
-    WebServerProcess();
+    WebServerProcess(const char *options[]);
 };
 
 }

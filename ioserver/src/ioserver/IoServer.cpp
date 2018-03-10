@@ -10,10 +10,8 @@
 #include <string>
 #include <thread>
 
-#include "ioserver/IoController.h"
 #include "ioserver/IoServerConfig.h"
-#include "ioserver/WebHandlerClientData.h"
-#include "ioserver/WebHandlerServoMove.h"
+#include "api/web/WebServerProcess.h"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -21,27 +19,7 @@
 #include <unistd.h>
 #endif
 
-//#include <boost/asio.hpp>
-#include <iostream>
-
 #define DOCUMENT_ROOT "/dev/null"
-#define DATA_URI "/data"
-#define EXIT_URI "/exit"
-bool exitNow = false;
-
-
-class ExitHandler : public CivetHandler
-{
-  public:
-    bool
-    handleGet(CivetServer *server, struct mg_connection *conn)
-    {
-        mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
-        mg_printf(conn, "Bye!\n");
-        exitNow = true;
-        return true;
-    }
-};
 
 //int main(int argc, char *argv[])
 //{
@@ -78,24 +56,7 @@ int main(int argc, char *argv[])
         0
     };
 
-    CivetServer server(options);
-
-    WebHandlerClientData webHandlerClientData;
-    server.addHandler(DATA_URI, webHandlerClientData);
-
-    WebHandlerServoMove webHandlerServoMove;
-    server.addHandler("/mbp", webHandlerServoMove);
-
-    ExitHandler h_exit;
-    server.addHandler(EXIT_URI, h_exit);
-
-    printf("Data at http://localhost:%d%s\n", config.getPort(), DATA_URI);
-    printf("Exit at http://localhost:%d%s\n", config.getPort(), EXIT_URI);
-
-    //TODO: Is there a better way to keep the process open?
-    while (!exitNow) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    }
+    r7::WebServerProcess webSrvr(options);
 
     return 0;
 }

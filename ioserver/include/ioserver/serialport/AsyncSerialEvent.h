@@ -6,7 +6,6 @@
 
 
 namespace r7 {
-    namespace ioserver {
 
 
 class AsyncSerialPort;
@@ -38,5 +37,5 @@ private:
 };
 
 
-}}
+}
 

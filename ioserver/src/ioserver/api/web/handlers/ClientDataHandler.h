@@ -1,18 +1,19 @@
-#ifndef WebHandlerClientData_H
-#define WebHandlerClientData_H
+#pragma once
 
 #include "civetweb/CivetServer.h"
 
-class WebHandlerClientData : public CivetHandler
+namespace r7 {
+
+class ClientDataHandler : public CivetHandler
 {
 public:
-    WebHandlerClientData();
+    ClientDataHandler();
 
     bool handleGet(CivetServer *server, struct mg_connection *conn);
     bool handlePost(CivetServer *server, struct mg_connection *conn);
 
 
-    virtual ~WebHandlerClientData();
+    virtual ~ClientDataHandler();
 
 protected:
 private:
@@ -22,4 +23,4 @@ private:
     std::string getFileNameFromPath(const struct mg_request_info* req_info);
 };
 
-#endif // WebHandlerClientData_H
+}

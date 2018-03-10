@@ -1,22 +1,23 @@
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-#include <boost/thread.hpp>
+#include "IoController.h"
 
-// #include "../common/CommonClient.h"
+#include <boost/thread.hpp>
+#include <boost/shared_ptr.hpp>
+
 #include "ioserver/serialport/AsyncSerialPort.h"
 
 namespace r7 {
-    namespace ioserver {
 
-class IoController
-{
+class SerialController : public IoController {
+
 public:
-    IoController();
+    SerialController();
+    virtual ~SerialController() = default;
 
-    void doTest();
+    virtual void doTest();
 
-private:
+protected:
     virtual void onSerialPortEvent(boost::shared_ptr<AsyncSerialEvent> evt);
 
 private:
@@ -25,5 +26,6 @@ private:
 };
 
 
-    }
 }
+
+
