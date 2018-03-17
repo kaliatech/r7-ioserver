@@ -3,7 +3,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 
-#include "ioserver/IoServerContext.h"
+#include "../IoServerContext.h"
 #include "ioserver/serialport/AsyncSerialPort.h"
 
 namespace r7 {
@@ -35,7 +35,7 @@ void SerialController::doTest() {
             logmsg << "COM3";
             logmsg << ". Reason:";
             logmsg << e.what();
-            IoServerContext::error(logmsg.str());
+            //IoServerContext::error(logmsg.str());
         }
     }
     std::string str = std::string("first test");

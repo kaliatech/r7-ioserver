@@ -34,14 +34,15 @@ class ExitHandler : public CivetHandler
 };
 
 
-WebServerProcess::WebServerProcess(const char *options[])
+WebServerProcess::WebServerProcess(const char *options[], IoServerContext& ctx) :
+    ctx(ctx)
 {
     CivetServer server(options);
 
-    ClientDataHandler ClientDataHandler;
+    ClientDataHandler ClientDataHandler(ctx);
     server.addHandler(DATA_URI, ClientDataHandler);
 
-    ServoMoveHandler ServoMoveHandler;
+    ServoMoveHandler ServoMoveHandler(ctx);
     server.addHandler("/mbp", ServoMoveHandler);
 
     ExitHandler h_exit;
@@ -49,6 +50,8 @@ WebServerProcess::WebServerProcess(const char *options[])
 
     // printf("Data at http://localhost:%d%s\n", config.getPort(), DATA_URI);
     // printf("Exit at http://localhost:%d%s\n", config.getPort(), EXIT_URI);
+
+    ctx.debug("Testing");
 
     //TODO: Is there a better way to keep the process open?
     while (!exitNow) {

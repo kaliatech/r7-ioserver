@@ -8,12 +8,18 @@
 #include <utility>
 #include <chrono>
 
-// for convenience
-using json = nlohmann::json;
+#include "pystring/pystring.h"
+
+#include "ioserver/IoServerException.h"
+
 
 namespace r7 {
 
-ClientDataHandler::ClientDataHandler()
+// for convenience
+using json = nlohmann::json;
+
+ClientDataHandler::ClientDataHandler(const IoServerContext& ctx) :
+    AbstractHandler(ctx)
 {
 }
 
@@ -21,174 +27,155 @@ bool ClientDataHandler::handleGet(CivetServer *server, struct mg_connection *con
 {
     const struct mg_request_info *req_info = mg_get_request_info(conn);
 
-    if (!strcmp(req_info->request_method, "OPTIONS")) {
-        return false;
+    //    if (!strcmp(req_info->request_method, "OPTIONS")) {
+    //        return false;
+    //    }
+
+    std::vector<std::string> tokens;
+    pystring::split(req_info->request_uri, tokens, "/");
+    if (tokens.size() != 3 && tokens.size() != 4) {
+        return this->handleError(conn, 400, "Invalid request due to wrong number of parameters.");
+    }
+    std::string type = tokens[2];
+
+    try {
+
+        if (tokens.size() == 3) {
+            json jsonResp;
+            auto objStrs = this->ctx.dbm->findAll(type);
+            for(auto it = objStrs.begin(); it != objStrs.end(); it++ ) {
+                jsonResp.push_back(json::parse(*it));
+            }
+            this->sendResp(conn, 200, r7::MimeType::APPLICATION_JSON, jsonResp.dump());
+        }
+        else if (tokens.size() == 4) {
+            std::string id = tokens[3];
+            auto jsonResp = this->ctx.dbm->findById(type, id);
+            if (jsonResp->empty()) {
+                throw IoServerException("Not Found", 404);
+            }
+            this->sendResp(conn, 200, r7::MimeType::APPLICATION_JSON, jsonResp->dump());
+        }
+
+
+    }
+    //    catch (json::parse_error &e)
+    //    {
+    //        return this->handleError(conn, 500, e.what());
+    //    }
+    catch (const IoServerException& e) {
+        return this->handleError(conn, e);
+    } catch (const std::exception& ex) {
+        return this->handleError(conn, 500, ex.what());
+    } catch (const std::string& exStr) {
+        return this->handleError(conn, 500, exStr);
+    } catch (...) {
+        std::exception_ptr p = std::current_exception();
+        return this->handleError(conn, 500, "Unknown");
     }
 
-    //std::string fileName;
-    //getFileNameFromPath(req_info, fileName);
-    std::string fileName = getFileNameFromPath(req_info);
-
-    if (fileName == "test") {
-        return this->handGet_test(server, conn, req_info);
-    }
-    else {
-        return this->handGet_json(server, conn, req_info, fileName);
-    }
+    return true;
 }
+bool ClientDataHandler::handleDelete(CivetServer *server, struct mg_connection *conn) {
+    const struct mg_request_info *req_info = mg_get_request_info(conn);
 
-std::string ClientDataHandler::getFileNameFromPath(const struct mg_request_info* req_info) {
+    std::vector<std::string> tokens;
+    pystring::split(req_info->request_uri, tokens, "/");
 
-    std::string fileName;
-
-    std::string valStr = std::string(req_info->request_uri);
-    std::regex re(".*/data/(.*)");
-
-    std::smatch match;
-
-    if (std::regex_search(valStr, match, re) && match.size() > 0) {
-        //fileName = match.str(1);
-        fileName.append(match.str(1));
+    if (tokens.size() != 4) {
+        return this->handleError(conn, 400, "Invalid request due to wrong number of parameters.");
     }
 
-    return fileName;
+    std::string type = tokens[2];
+    std::string id = tokens[3];
+
+    try {
+        this->ctx.dbm->deleteObj(type, id);
+        this->sendResp(conn, 204, r7::MimeType::APPLICATION_JSON, "");
+    }
+    catch (const IoServerException& e) {
+        return this->handleError(conn, e);
+    } catch (const std::exception& ex) {
+        return this->handleError(conn, 500, ex.what());
+    } catch (const std::string& exStr) {
+        return this->handleError(conn, 500, exStr);
+    } catch (...) {
+        std::exception_ptr p = std::current_exception();
+        return this->handleError(conn, 500, "Unknown");
+    }
+
+    return true;
 }
 
 bool ClientDataHandler::handlePost(CivetServer *server, struct mg_connection *conn) {
 
     const struct mg_request_info *req_info = mg_get_request_info(conn);
 
-    if (!strcmp(req_info->request_method, "OPTIONS")) {
-        return false;
+    //    if (!strcmp(req_info->request_method, "OPTIONS")) {
+    //        return false;
+    //    }
+
+    std::vector<std::string> tokens;
+    pystring::split(req_info->request_uri, tokens, "/");
+
+    if (tokens.size() != 3 && tokens.size() != 4) {
+        return this->handleError(conn, 400, "Invalid request due to wrong number of parameters.");
     }
 
-    std::string baseFilename = getFileNameFromPath(req_info);
+    std::string type = tokens[2];
 
-    std::fstream iFile(("data/" + baseFilename + ".json").c_str());
-    bool fileExists = (bool)iFile;
-    if (fileExists) {
 
-        unsigned long now =
-                std::chrono::system_clock::now().time_since_epoch() /
-                std::chrono::milliseconds(1);
-
-        // Create backup
-        std::ofstream  dst("data/" + baseFilename + "-" + std::to_string(now) + ".bak.json", std::ios::binary);
-        dst << iFile.rdbuf();
-        dst.close();
-    }
-
-    iFile.close();
-
-    json jsonResp;
+    json reqJson;
+    std::string prevId;
+    std::string newId;
     try {
-        std::string reqBody;
+        std::unique_ptr<std::string> reqBody = this->readRequestBody(conn);
+        reqJson = json::parse(*reqBody.get());
 
-        char* buf = new char[1024 * 1024 * 1];
-        int bytesRead = mg_read(conn, buf, sizeof(buf));
-        while (bytesRead > 0) {
-            reqBody.append(buf, bytesRead);
-            bytesRead = mg_read(conn, buf, sizeof(buf));
+        if (tokens.size() == 3) {
+            //todo: creating new, extract from request or generate new
+            newId = reqJson["id"];
+            if (newId == "") {
+                newId = "todo-new";
+            }
+            prevId = newId;
         }
-        //if (reqBody.size() > 2) {
-        //    reqBody.erase(1, 2);
-        //}
-
-
-
-        std::ofstream oFile(("data/" + baseFilename + ".json").c_str());
-        //oFile.write(reqJson.dump(2).c_str(), reqBody.size());
-
-        //json reqJson(reqBody);
-        json reqJson = json::parse(reqBody);
-        oFile << reqJson.dump(2);
-
-        mg_printf(conn, "HTTP/1.1 201 OK\r\n"
-                        "Access-Control-Allow-Origin: *\r\n"
-                        "Content-Type: application/json\r\n\r\n");
-
-        mg_printf(conn, reqJson.dump().c_str());
-
-    }
-    catch (json::parse_error &e)
-    {
-        mg_printf(conn, "HTTP/1.1 500 Internal Server Error\r\n"
-                        "Access-Control-Allow-Origin: *\r\n"
-                        "Content-Type: application/json\r\n\r\n");
-        std::cerr << e.what() << std::endl;
-        jsonResp["msg"] = e.what();
+        else {
+            // patch controller, possibly changing the id
+            prevId = tokens[3];
+            newId = reqJson["id"];
+        }
+        //    catch (json::parse_error &e)
+        //    {
+        //        std::cerr << e.what() << std::endl;
+        //        jsonResp["msg"] = e.what();
+        //        return this->handleError(conn, 500, jsonResp.dump());
+        //    }
+    } catch (const std::exception& ex) {
+        return this->handleError(conn, 400, std::string("Invalid request. Reason:") +  ex.what());
+    } catch (...) {
+        std::exception_ptr p = std::current_exception();
+        return this->handleError(conn, 400, "Invalid request. Reason unknown.");
     }
 
-    return true;
-}
-
-bool ClientDataHandler::handGet_json(CivetServer* server, struct mg_connection* conn, const struct mg_request_info* req_info, const std::string baseFilename) {
-
-    std::ifstream iFile(("data/" + baseFilename + ".json").c_str());
-    bool fileExists = (bool)iFile;
-    if (!fileExists) {
-        return false;
-    }
-
-    json jsonResp;
     try {
-
-        //std::unique_ptr<json> jsonFile;
-        //jsonFile = std::make_unique<json>(json());
-        //iFile >> *jsonFile.get();
-        iFile >> jsonResp;
-        mg_printf(conn, "HTTP/1.1 200 OK\r\n"
-                        "Access-Control-Allow-Origin: *\r\n"
-                        "Content-Type: application/json\r\n\r\n");
-
+        this->ctx.dbm->save(type, prevId, newId, reqJson);
+        auto jsonResp = this->ctx.dbm->findById(type, newId);
+        if (jsonResp->empty()) {
+            throw IoServerException("Error saving to DB.");
+        }
+        this->sendResp(conn, 201, r7::MimeType::APPLICATION_JSON, jsonResp->dump());
     }
-    catch (json::parse_error &e)
-    {
-        mg_printf(conn, "HTTP/1.1 500 Internal Server Error\r\n"
-                        "Access-Control-Allow-Origin: *\r\n"
-                        "Content-Type: application/json\r\n\r\n");
-        std::cerr << e.what() << std::endl;
-        jsonResp["msg"] = e.what();
+    catch (const IoServerException& e) {
+        return this->handleError(conn, e);
+    } catch (const std::exception& ex) {
+        return this->handleError(conn, 500, ex.what());
+    } catch (const std::string& exStr) {
+        return this->handleError(conn, 500, exStr);
+    } catch (...) {
+        std::exception_ptr p = std::current_exception();
+        return this->handleError(conn, 500, "Unknown");
     }
-    
-    mg_printf(conn, jsonResp.dump(2).c_str());
-    return true;
-}
-
-bool ClientDataHandler::handGet_test(CivetServer* server, struct mg_connection* conn, const struct mg_request_info* req_info) {
-    char valBuffer[255];
-    int result = -1;
-    if (req_info->query_string != NULL) {
-        result = mg_get_var(req_info->query_string, strlen(req_info->query_string), "txt", valBuffer, sizeof(valBuffer));
-    }
-
-    mg_printf(conn, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n");
-    mg_printf(conn, "<html><body>");
-    mg_printf(conn, "<h2>Test</h2>");
-
-
-    // raw string literal
-    auto j2 = R"(
-              {
-              "happy": true,
-              "pi": 3.141
-              }
-              )"_json;
-    json jsonFile;
-    if (result != -1) {
-        j2["request_uri"] = req_info->request_uri;
-        j2["local_uri"] = req_info->local_uri;
-
-        j2["txt"] = valBuffer; \
-    }
-
-    std::string out = j2.dump(2);
-
-    mg_printf(conn, "<pre>");
-    mg_printf(conn, out.c_str());
-    mg_printf(conn, "</pre>");
-
-    mg_printf(conn, "</body></html>\n");
 
     return true;
 }

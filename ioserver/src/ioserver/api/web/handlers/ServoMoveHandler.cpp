@@ -19,7 +19,8 @@ using json = nlohmann::json;
 
 namespace r7 {
 
-ServoMoveHandler::ServoMoveHandler() :
+ServoMoveHandler::ServoMoveHandler(const IoServerContext& ctx) :
+    AbstractHandler(ctx),
     ioController (new SerialController())
 {
     // this->ioController = new SerialController();
@@ -44,7 +45,6 @@ bool ServoMoveHandler::handlePost(CivetServer *server, struct mg_connection *con
     //    }
 
 
-    this->printCommonHeaders(conn, 201, r7::MimeType::APPLICATION_JSON);
 
     std::vector<std::string> tokens;
     pystring::split(req_info->request_uri, tokens, "/");
@@ -60,7 +60,7 @@ bool ServoMoveHandler::handlePost(CivetServer *server, struct mg_connection *con
     jsonResp["token2"] = tokens[2]; // servoId
     jsonResp["token3"] = tokens[3]; // servoPulse
 
-    mg_printf(conn, jsonResp.dump(2).c_str());
+    this->sendResp(conn, 201, r7::MimeType::APPLICATION_JSON, jsonResp.dump(2));
 
     ioController->doTest();
 

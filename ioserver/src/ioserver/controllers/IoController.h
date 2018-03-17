@@ -17,10 +17,7 @@ public:
     virtual void doTest() = 0;
 
 public:
-    const std::string& getId() {return id;};
-
-private:
-    const std::string id;
+    std::string id;
 };
 
 }

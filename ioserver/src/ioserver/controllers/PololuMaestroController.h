@@ -1,8 +1,10 @@
 #pragma once
 
+#include "SerialController.h"
+
 namespace r7 {
 
-class PololuMaestroController
+class PololuMaestroController : public SerialController
 {
 public:
     PololuMaestroController();

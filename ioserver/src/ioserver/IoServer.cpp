@@ -1,44 +1,30 @@
-/* Copyright (c) 2017 Joshua Sanderson
- * Copyright (c) 2017 JGS Technical LLC
- * License http://opensource.org/licenses/mit-license.php MIT License
- */
-
+#include "IoServer.h"
 #include "civetweb/CivetServer.h"
 
 #include <chrono>
 #include <fstream>
 #include <string>
 #include <thread>
+#include <iostream>
 
+#include "data/DatabaseManager.h"
 #include "ioserver/IoServerConfig.h"
-#include "api/web/WebServerProcess.h"
+#include "IoServerContext.h"
+#include "ioserver/IoServerException.h"
 
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
+#include "api/web/WebServerProcess.h"
 
 #define DOCUMENT_ROOT "/dev/null"
 
-//int main(int argc, char *argv[])
-//{
-//    boost::asio::io_service io_service;
-//    for( int x = 0; x < 42; ++x )
-//    {
-//        io_service.poll();
-//        std::cout << "Counter: " << x << std::endl;
-//    }
-//    return 0;
-//}
+namespace r7 {
 
-int main(int argc, char *argv[])
+IoServer::IoServer()
 {
     IoServerConfig config;
     bool result = config.parseConfig();
     if (!result) {
         printf("Unable to parse config file.");
-        return -1;
+//        return;
     }
 
     printf("Settings\n");
@@ -56,7 +42,20 @@ int main(int argc, char *argv[])
         0
     };
 
-    r7::WebServerProcess webSrvr(options);
+    try {
+        std::shared_ptr<r7::DatabaseManager> db(new r7::DatabaseManager());
+        db->reinitSchema();
 
-    return 0;
+        IoServerContext ctx(db);
+
+        //TODO: This is doesn't return. Eventually should move to own thread and have IoServer be the master owner.
+        r7::WebServerProcess webSrvr(options, ctx);
+    }
+    catch (const IoServerException& e) {
+        printf("Error initializing. Message: %s\n", e.what());
+        system("pause");
+    }
 }
+}
+
+

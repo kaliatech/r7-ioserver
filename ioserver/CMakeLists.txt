@@ -28,6 +28,7 @@ SET(HEADERS_CIVETWEB
 SET(HEADERS_MISC
     "include/nlohmann-json/json.hpp"
     "include/pystring/pystring.h"
+    "include/sqlite3/sqlite3.h"
 )
 
 
@@ -64,7 +65,8 @@ file(GLOB_RECURSE SOURCES_IOSERVER "*.cpp" "*.hpp")
 #)
 
 set(SOURCES_MISC
-        "src/pystring/pystring.cpp"
+  "src/pystring/pystring.cpp"
+  "src/sqlite3/sqlite3.c"
 )
 
 
@@ -91,6 +93,30 @@ find_package(Boost 1.65.1 REQUIRED COMPONENTS thread system regex signals)
 # if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 # endif(Boost_FOUND)
+
+# https://stackoverflow.com/a/40217291/123378
+if (WIN32)
+    macro(get_WIN32_WINNT version)
+        if (CMAKE_SYSTEM_VERSION)
+            set(ver ${CMAKE_SYSTEM_VERSION})
+            string(REGEX MATCH "^([0-9]+).([0-9])" ver ${ver})
+            string(REGEX MATCH "^([0-9]+)" verMajor ${ver})
+            # Check for Windows 10, b/c we'll need to convert to hex 'A'.
+            if ("${verMajor}" MATCHES "10")
+                set(verMajor "A")
+                string(REGEX REPLACE "^([0-9]+)" ${verMajor} ver ${ver})
+            endif ("${verMajor}" MATCHES "10")
+            # Remove all remaining '.' characters.
+            string(REPLACE "." "" ver ${ver})
+            # Prepend each digit with a zero.
+            string(REGEX REPLACE "([0-9A-Z])" "0\\1" ver ${ver})
+            set(${version} "0x${ver}")
+        endif(CMAKE_SYSTEM_VERSION)
+    endmacro(get_WIN32_WINNT)
+
+    get_WIN32_WINNT(ver)
+    add_definitions(-D_WIN32_WINNT=${ver})
+endif(WIN32)
 
 # headers included only so that they appear in visual studio project
 add_executable(IoServer
