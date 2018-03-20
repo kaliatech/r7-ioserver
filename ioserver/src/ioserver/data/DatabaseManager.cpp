@@ -130,7 +130,7 @@ std::unique_ptr<nlohmann::json> DatabaseManager::findById(const std::string& typ
     sqlite3_finalize(stmt);
 
     //TODO: Seems inefficient to use copy constructor. How to parse in constructor?
-    return std::make_unique<nlohmann::json>(nlohmann::json(jsonObj));
+    return std::make_unique<nlohmann::json>(jsonObj);
 }
 
 void DatabaseManager::save(const std::string& type, const std::string& prevId, const std::string& newId, const nlohmann::json& obj) {

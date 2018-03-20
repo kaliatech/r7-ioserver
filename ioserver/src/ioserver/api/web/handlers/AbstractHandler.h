@@ -23,7 +23,7 @@ protected:
     bool AbstractHandler::handleError(struct mg_connection *conn, const IoServerException& ex);
     bool AbstractHandler::handleError(struct mg_connection *conn, const int statusCode, const std::string& msg);
 
-    void sendResp(struct mg_connection *conn, int status, r7::MimeType contentType, std::string respBody);
+    bool sendResp(struct mg_connection *conn, int status, r7::MimeType contentType, std::string respBody);
 
     std::unique_ptr<std::string> readRequestBody(struct mg_connection *conn);
 };

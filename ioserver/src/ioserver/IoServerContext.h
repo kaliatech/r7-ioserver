@@ -3,8 +3,9 @@
 #include <string>
 #include <boost/thread/mutex.hpp>
 
-//class DatabaseManager;
 #include "data/DatabaseManager.h"
+#include "controllers/ControllerManager.h"
+#include "servos/ServoManager.h"
 
 namespace r7 {
 
@@ -20,7 +21,7 @@ public:
     boost::mutex log_mutex;
 
 public:
-    IoServerContext(std::shared_ptr<DatabaseManager> dbManager);
+    IoServerContext(const std::shared_ptr<DatabaseManager> dbManager, const std::shared_ptr<ControllerManager> controllerManager, const std::shared_ptr<ServoManager> servoManager);
     ~IoServerContext(void);
 
     void log(const std::string& msg, Level level);
@@ -29,6 +30,8 @@ public:
     void error(const std::string& msg);
 
     const std::shared_ptr<DatabaseManager> dbm;
+    const std::shared_ptr<ControllerManager> cm;
+    const std::shared_ptr<ServoManager> sm;
 };
 }
 

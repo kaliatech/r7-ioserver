@@ -39,14 +39,21 @@ IoServer::IoServer()
         "access_control_allow_origin", "*",
         "access_control_allow_methods", "*",
         "access_control_allow_headers", "*",
+        "enable_keep_alive", "yes",
+        "keep_alive_timeout_ms", "30000",
         0
     };
 
     try {
-        std::shared_ptr<r7::DatabaseManager> db(new r7::DatabaseManager());
-        db->reinitSchema();
+        //std::shared_ptr<r7::DatabaseManager> db(new r7::DatabaseManager());
+        auto dbm = std::make_shared<r7::DatabaseManager>();
+        dbm->reinitSchema();
 
-        IoServerContext ctx(db);
+        auto cm = std::make_shared<r7::ControllerManager>(dbm);
+
+        auto sm = std::make_shared<r7::ServoManager>(dbm);
+
+        IoServerContext ctx(dbm, cm, sm);
 
         //TODO: This is doesn't return. Eventually should move to own thread and have IoServer be the master owner.
         r7::WebServerProcess webSrvr(options, ctx);

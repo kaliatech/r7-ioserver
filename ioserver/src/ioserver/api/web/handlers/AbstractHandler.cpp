@@ -41,15 +41,20 @@ bool AbstractHandler::handleError(struct mg_connection *conn, const int statusCo
     json errMsgJson;
     errMsgJson["msg"] = msg;
 
+    std::string errMsgStr = errMsgJson.dump();
+
     mg_printf(conn,     "HTTP/1.1 %i %s\r\n"
                         "Access-Control-Allow-Origin: *\r\n"
                         "Access-Control-Max-Age: 86400\r\n"
                         "Content-Type: %s; charset=utf-8\r\n"
+                        //"Connection: close"
+                        "Content-Length: %i\r\n"
                         "\r\n%s",
                         statusCode,
                         status_text,
                         MimeTypes.at(MimeType::APPLICATION_JSON).str.c_str(),
-                        errMsgJson.dump().c_str());
+                        errMsgStr.size(),
+                        errMsgStr.c_str());
 
     return true;
 }
@@ -65,7 +70,7 @@ std::unique_ptr<std::string> AbstractHandler::readRequestBody(struct mg_connecti
     return reqBody;
 }
 
-void AbstractHandler::sendResp(struct mg_connection *conn, int status, MimeType mimeType, std::string reqBody) {
+bool AbstractHandler::sendResp(struct mg_connection *conn, int status, MimeType mimeType, std::string reqBody) {
 
     const std::string &contentType = MimeTypes.at(mimeType).str;
 
@@ -83,10 +88,15 @@ void AbstractHandler::sendResp(struct mg_connection *conn, int status, MimeType 
     mg_printf(conn, "HTTP/1.1 %i OK\r\n"
                     "Access-Control-Allow-Origin: *\r\n"
                     "Access-Control-Max-Age: 86400\r\n"
-                    "Content-Type: %s\r\n\r\n%s",
-                    status, contentType.c_str(), reqBody.c_str());
+                    "Content-Type: %s; charset=utf-8\r\n"
+                    //"Connection: keep-alive\r\n"
+                    "Content-Length: %i\r\n"
+                    "\r\n"
+                    "%s",
+                    status, contentType.c_str(), reqBody.size(), reqBody.c_str());
 
 
+    return true;
 }
 
 }

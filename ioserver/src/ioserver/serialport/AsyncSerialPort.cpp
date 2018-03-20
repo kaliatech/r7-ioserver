@@ -36,6 +36,7 @@ AsyncSerialPort::AsyncSerialPort(void) :
 
 AsyncSerialPort::~AsyncSerialPort(void)
 {
+    io_service.stop();
 
     if(isOpen())
     {
@@ -44,10 +45,10 @@ AsyncSerialPort::~AsyncSerialPort(void)
 
         } catch(...)
         {
+            std::string tmp("here");
             //Don't throw from a destructor
         }
     }
-    io_service.stop();
 
     eventSignal.disconnect_all_slots();
 }
@@ -166,14 +167,6 @@ void AsyncSerialPort::onAsyncWriteComplete(const boost::system::error_code& erro
 
         return;
     }
-    writeBufferSize=writeQueue.size();
-    writeBuffer.reset(new unsigned char[writeQueue.size()]);
-    std::copy(writeQueue.begin(), writeQueue.end(), writeBuffer.get());
-    writeQueue.clear();
-    boost::asio::async_write(	port,
-                                boost::asio::buffer(writeBuffer.get(),writeBufferSize),
-                                onAsyncWriteFunctor);
-
 }
 
 
