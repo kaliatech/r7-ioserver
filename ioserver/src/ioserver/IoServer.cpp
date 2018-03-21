@@ -14,6 +14,8 @@
 
 #include "api/web/WebServerProcess.h"
 
+#include "easyloggingpp/easylogging++.h"
+
 #define DOCUMENT_ROOT "/dev/null"
 
 namespace r7 {
@@ -27,9 +29,9 @@ IoServer::IoServer()
 //        return;
     }
 
-    printf("Settings\n");
-    printf("  Max IPs    : %d\n", config.getMaxAllowedIps());
-    printf("  Format     : %s\n", config.getFormat().c_str());
+    //printf("Settings\n");
+    //printf("  Max IPs    : %d\n", config.getMaxAllowedIps());
+    //printf("  Format     : %s\n", config.getFormat().c_str());
 
 
     std::string port(std::to_string(config.getPort()));
@@ -41,6 +43,7 @@ IoServer::IoServer()
         "access_control_allow_headers", "*",
         "enable_keep_alive", "yes",
         "keep_alive_timeout_ms", "30000",
+        "tcp_nodelay", "1", // TODO: Need to test this
         0
     };
 
@@ -56,12 +59,18 @@ IoServer::IoServer()
         IoServerContext ctx(dbm, cm, sm);
 
         //TODO: This is doesn't return. Eventually should move to own thread and have IoServer be the master owner.
+        LOG(INFO) << "Listening on port:" << port;
         r7::WebServerProcess webSrvr(options, ctx);
     }
-    catch (const IoServerException& e) {
-        printf("Error initializing. Message: %s\n", e.what());
+    catch (const std::exception& e) {
+        LOG(ERROR) << "Error initializing. " << e.what();
         system("pause");
     }
+    catch (...) {
+        LOG(ERROR) << "Error initializing.";
+        system("pause");
+    }
+
 }
 }
 

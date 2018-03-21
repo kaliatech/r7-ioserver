@@ -76,6 +76,7 @@ private:
 
 private:
     bool serialPortOpen;
+    std::string portStr;
 
     static const int readBufferSize=512;
 

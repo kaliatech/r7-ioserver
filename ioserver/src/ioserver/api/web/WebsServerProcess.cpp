@@ -51,8 +51,6 @@ WebServerProcess::WebServerProcess(const char *options[], IoServerContext& ctx) 
     // printf("Data at http://localhost:%d%s\n", config.getPort(), DATA_URI);
     // printf("Exit at http://localhost:%d%s\n", config.getPort(), EXIT_URI);
 
-    ctx.debug("Testing");
-
     //TODO: Is there a better way to keep the process open?
     while (!exitNow) {
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));

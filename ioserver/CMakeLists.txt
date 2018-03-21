@@ -1,3 +1,4 @@
+#set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # The version number.
 set (Tutorial_VERSION_MAJOR 1)
@@ -118,6 +119,8 @@ if (WIN32)
     add_definitions(-D_WIN32_WINNT=${ver})
 endif(WIN32)
 
+add_definitions(-DELPP_THREAD_SAFE)
+
 # headers included only so that they appear in visual studio project
 add_executable(IoServer
 	${HEADERS_CIVETWEB}
@@ -145,3 +148,4 @@ add_custom_command(TARGET IoServer POST_BUILD
 if (MSVC)
 
 endif (MSVC)
+

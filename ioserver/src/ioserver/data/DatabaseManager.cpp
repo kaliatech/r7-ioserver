@@ -26,7 +26,7 @@ void DatabaseManager::reinitSchema()
     std::ifstream iFile("data/db-init.sql");
     bool fileExists = (bool)iFile;
     if (!fileExists) {
-        throw IoServerException("/data/db-init.sql file not found");
+        throw IoServerException("File: \"./data/db-init.sql\" not found.");
     }
 
     std::stringstream sqlBuffer;
