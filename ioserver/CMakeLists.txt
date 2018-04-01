@@ -131,7 +131,7 @@ add_executable(IoServer
         ${SOURCES_MISC}
 )
 #target_compile_options(Tutorial PUBLIC -DHAVE_STRUCT_TIMESPEC)
-target_link_libraries(IoServer ${Boost_LIBRARIES})
+target_link_libraries(IoServer ${Boost_LIBRARIES} Threads::Threads ${CMAKE_DL_LIBS})
 #target_link_libraries(anyExecutable Boost::program_options)
 
 #add_custom_command(TARGET IoServer POST_BUILD

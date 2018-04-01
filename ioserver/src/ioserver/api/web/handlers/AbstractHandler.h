@@ -20,8 +20,8 @@ protected:
 
     bool handleCommonRequests(CivetServer *server, struct mg_connection *conn);
 
-    bool AbstractHandler::handleError(struct mg_connection *conn, const IoServerException& ex);
-    bool AbstractHandler::handleError(struct mg_connection *conn, const int statusCode, const std::string& msg);
+    bool handleError(struct mg_connection *conn, const IoServerException& ex);
+    bool handleError(struct mg_connection *conn, const int statusCode, const std::string& msg);
 
     bool sendResp(struct mg_connection *conn, int status, r7::MimeType contentType, std::string respBody);
 

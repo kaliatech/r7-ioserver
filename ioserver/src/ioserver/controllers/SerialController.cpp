@@ -7,6 +7,8 @@
 #include "../servos/Servo.h"
 #include "ioserver/serialport/AsyncSerialPort.h"
 
+#include "easyloggingpp/easylogging++.h"
+
 namespace r7 {
 
 SerialController::SerialController() :
@@ -30,9 +32,10 @@ SerialController::~SerialController()
 
 void SerialController::moveToPulse(const Servo& servo, const int& pulse) {
     if (!serialPort->isOpen()) {
-
+        std::string ioConnStr = this->getIoConnStr();
+        LOG(INFO) << "Opening serial port: " << ioConnStr;
         try {
-            serialPort->open("COM6",
+            serialPort->open(ioConnStr,
                              115200,
                              boost::asio::serial_port_base::parity(boost::asio::serial_port_base::parity::none),
                              boost::asio::serial_port_base::character_size(8),
@@ -41,12 +44,8 @@ void SerialController::moveToPulse(const Servo& servo, const int& pulse) {
         }
         catch(boost::system::system_error e)
         {
-            std::ostringstream logmsg;
-            logmsg << "SerialController:: Error opening port:";
-            logmsg << "COM3";
-            logmsg << ". Reason:";
-            logmsg << e.what();
-            //IoServerContext::error(logmsg.str());
+            LOG(ERROR) << "Error opening port: " << ioConnStr << ". Msg: " << e.what();
+            return;
         }
     }
 //    std::string str = std::string("first test");

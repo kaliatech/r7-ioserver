@@ -20,11 +20,14 @@ public:
 
     virtual void moveToPulse(const Servo& servo, const int& pulse) = 0;
 
+    virtual const std::string& getIoConnStr();
 
 public:
     std::string id;
 
+
 private:
+    std::string ioConnStr;
     std::unique_ptr<nlohmann::json> jsonObj;
 
 };

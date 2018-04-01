@@ -1,12 +1,13 @@
 #pragma once
 
-#include <exception>
+#include <stdexcept>
 #include <string>
 
 
 class IoServerException : public std::logic_error
 {
 public:
+    using std::logic_error::logic_error;
     IoServerException(const std::string& msg);
     IoServerException(const std::string& msg, const int statusCode);
     virtual ~IoServerException() throw (){}
@@ -14,5 +15,5 @@ public:
     const int getStatusCode() const {return this->statusCode;};
 
 private:
-    const int statusCode;
+    const int statusCode = -1;
 };
