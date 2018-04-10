@@ -37,14 +37,14 @@ void ControllerRepository::save(IoController& ioController) {
     if (rc != SQLITE_OK)
         throw IoServerException(sqlite3_errmsg(db));
 
-    rc = sqlite3_bind_text(stmt, 1, ioController.id.c_str(), -1, SQLITE_STATIC);
+    rc = sqlite3_bind_text(stmt, 1, ioController.getId().c_str(), -1, SQLITE_STATIC);
     if (rc != SQLITE_OK) {
         IoServerException e(sqlite3_errmsg(db));
         sqlite3_finalize(stmt);
         throw e;
     }
 
-    rc = sqlite3_bind_text(stmt, 2, "TBD", -1, SQLITE_STATIC);
+    rc = sqlite3_bind_text(stmt, 2, ioController.getType().c_str(), -1, SQLITE_STATIC);
     if (rc != SQLITE_OK) {
         IoServerException e(sqlite3_errmsg(db));
         sqlite3_finalize(stmt);

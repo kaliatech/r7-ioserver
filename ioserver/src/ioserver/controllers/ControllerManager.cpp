@@ -5,6 +5,7 @@
 #include "PololuMaestroController.h"
 
 #include "nlohmann-json/json.hpp"
+#include "easyloggingpp/easylogging++.h"
 
 namespace r7 {
 
@@ -14,14 +15,39 @@ ControllerManager::ControllerManager(const shared_ptr<DatabaseManager> dbm) :
     dbm(dbm),
     controllers()
 {
-    //TODO: Set self up as listener to dbm.
-    //Keep controllers and servos in memory, refreshing when dbm signals a change
+    this->m_connection = dbm->connect(boost::bind(&ControllerManager::onDbmUpdate, this, _1, _2, _3));
+}
+
+ControllerManager::~ControllerManager() {
+    this->m_connection.disconnect();
+}
+
+void ControllerManager::onDbmUpdate(const std::string& type, const std::string& id, const nlohmann::json& jsonObj) {
+     LOG(DEBUG) << "onDbmUpdate: " << type;
+
+     auto pair = this->controllers.find(id);
+
+     // If not in memory, ignore
+     if (pair == this->controllers.end()) {
+         return;
+     }
+
+     std::shared_ptr<IoController> controller = pair->second;
+     if (controller->getId() != id) {
+         // Clear from cache and reinsert with new id
+         controllers.erase(controller->getId());
+         controllers.emplace(id, controller);
+     }
+
+     controller->onDbmUpdate(jsonObj);
 }
 
 std::shared_ptr<IoController> ControllerManager::findControllerById(const std::string& controllerId) {
 
     //TODO: eventually we should cache. For now, look up every time:
     auto pair = this->controllers.find(controllerId);
+
+    // If equals end, then not found
     if (pair == this->controllers.end()) {
         std::unique_ptr<nlohmann::json> jsonObj = this->dbm->findById("controllers", controllerId);
         if (jsonObj == nullptr) {

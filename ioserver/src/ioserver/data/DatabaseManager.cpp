@@ -5,7 +5,7 @@
 
 #include "sqlite3/sqlite3.h"
 #include "ioserver/IoServerException.h"
-#include "JsonTransformers.h"
+// #include "JsonTransformers.h"
 
 #include "ControllerRepository.h"
 
@@ -19,6 +19,11 @@ DatabaseManager::DatabaseManager()
     }
 
     this->controllerRepo = new ControllerRepository(*this);
+}
+
+boost::signals2::connection DatabaseManager::connect(const signal_dbm_update::slot_type &subscriber)
+{
+    return this->m_sig.connect(subscriber);
 }
 
 void DatabaseManager::reinitSchema()
@@ -138,9 +143,9 @@ void DatabaseManager::save(const std::string& type, const std::string& prevId, c
     sqlite3_stmt *stmt;
 
     std::ostringstream sql;
-//    sql << "REPLACE INTO ";
-//    sql << type;
-//    sql << " (id, obj) VALUES (?, ?)";
+    //    sql << "REPLACE INTO ";
+    //    sql << type;
+    //    sql << " (id, obj) VALUES (?, ?)";
 
     bool updating = false;
     auto existingJsonObj = this->findById(type, prevId);
@@ -196,6 +201,8 @@ void DatabaseManager::save(const std::string& type, const std::string& prevId, c
     }
 
     sqlite3_finalize(stmt);
+
+    this->m_sig(type, prevId, obj);
 
 };
 

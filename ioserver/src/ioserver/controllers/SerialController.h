@@ -15,10 +15,11 @@ class SerialController : public IoController {
 
 public:
     SerialController();
-    SerialController(std::unique_ptr<nlohmann::json> jsonObj);
+    SerialController(const std::string& type, std::unique_ptr<nlohmann::json> jsonObj);
     virtual ~SerialController();
 
     virtual void moveToPulse(const Servo& servo, const int& pulse);
+    virtual void reset();
 
 protected:
     virtual void onSerialPortEvent(boost::shared_ptr<AsyncSerialEvent> evt);

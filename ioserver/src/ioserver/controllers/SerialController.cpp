@@ -12,12 +12,12 @@
 namespace r7 {
 
 SerialController::SerialController() :
-    SerialController(nullptr)
+    SerialController("", nullptr)
 {
 }
 
-SerialController::SerialController(std::unique_ptr<nlohmann::json> jsonObj) :
-    IoController(std::move(jsonObj)),
+SerialController::SerialController(const std::string& type, std::unique_ptr<nlohmann::json> jsonObj) :
+    IoController(type, std::move(jsonObj)),
     serialPort(boost::shared_ptr<AsyncSerialPort>(new AsyncSerialPort()))
 {
     serialPortIOThread = new boost::thread(boost::bind(&AsyncSerialPort::run_io_service, serialPort));
@@ -28,6 +28,12 @@ SerialController::~SerialController()
 {
     this->serialPort->close();
     delete serialPortIOThread;
+}
+
+void SerialController::reset() {
+    if (serialPort->isOpen()) {
+        this->serialPort->close();
+    }
 }
 
 void SerialController::moveToPulse(const Servo& servo, const int& pulse) {
@@ -48,8 +54,8 @@ void SerialController::moveToPulse(const Servo& servo, const int& pulse) {
             return;
         }
     }
-//    std::string str = std::string("first test");
-//    std::vector<unsigned char> data(str.begin(), str.end());
+    //    std::string str = std::string("first test");
+    //    std::vector<unsigned char> data(str.begin(), str.end());
 
     //unsigned char data[4];
 

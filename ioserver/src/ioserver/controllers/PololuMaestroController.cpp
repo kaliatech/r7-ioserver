@@ -10,7 +10,7 @@ PololuMaestroController::PololuMaestroController() :
 }
 
 PololuMaestroController::PololuMaestroController(std::unique_ptr<nlohmann::json> jsonObj) :
-    SerialController(std::move(jsonObj))
+    SerialController("pololu-maestro", std::move(jsonObj))
 {
 
 }

@@ -7,6 +7,8 @@
 #include "nlohmann-json/json.hpp"
 #include "sqlite3/sqlite3.h"
 
+#include <boost/signals2.hpp>
+
 namespace r7 {
 
 class ControllerRepository;
@@ -14,10 +16,14 @@ class ControllerRepository;
 class DatabaseManager
 {
 public:
+    typedef boost::signals2::signal<void (const std::string& type, const std::string& id, const nlohmann::json& jsonObj)>  signal_dbm_update;
+
+public:
     DatabaseManager();
     virtual ~DatabaseManager();
 
     // virtual void doTest() = 0;
+    boost::signals2::connection connect(const signal_dbm_update::slot_type &subscriber);
 
 public:
    sqlite3& getConn() {return *conn;};
@@ -33,6 +39,7 @@ public:
 
 private:
     sqlite3* conn;
+    signal_dbm_update m_sig;
 
     ControllerRepository* controllerRepo;
 };

@@ -11,9 +11,9 @@ namespace r7 {
 
     void to_json(json& j, const IoController& c);
 
-    void from_json(const json& j, IoController& c);
+    //void from_json(const json& j, IoController& c);
 
     void to_json(json& j, const PololuMaestroController& c);
 
-    void from_json(const json& j, PololuMaestroController& c);
+    //void from_json(const json& j, PololuMaestroController& c);
 }
