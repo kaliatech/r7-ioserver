@@ -63,4 +63,12 @@ std::shared_ptr<IoController> ControllerManager::findControllerById(const std::s
     }
 }
 
+void ControllerManager::stop() {
+    std::unordered_map<std::string, std::shared_ptr<IoController>>::iterator it = controllers.begin();
+    while(it != controllers.end())
+    {
+        it->second->stop();
+        it++;
+    }
+}
 }

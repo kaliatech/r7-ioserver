@@ -20,8 +20,7 @@ using json = nlohmann::json;
 namespace r7 {
 
 ServoMoveHandler::ServoMoveHandler(const IoServerContext& ctx) :
-    AbstractHandler(ctx),
-    ioController (new SerialController())
+    AbstractHandler(ctx)
 {
     // this->ioController = new SerialController();
 }
@@ -94,6 +93,5 @@ bool ServoMoveHandler::handlePost(CivetServer *server, struct mg_connection *con
 
 ServoMoveHandler::~ServoMoveHandler()
 {
-    delete this->ioController;
 }
 }

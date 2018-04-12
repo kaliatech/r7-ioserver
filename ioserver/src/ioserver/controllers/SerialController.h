@@ -2,8 +2,9 @@
 
 #include "IoController.h"
 
+#include <memory>
+
 #include <boost/thread.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "nlohmann-json/json.hpp"
 
@@ -20,12 +21,13 @@ public:
 
     virtual void moveToPulse(const Servo& servo, const int& pulse);
     virtual void reset();
+    virtual void stop();
 
 protected:
     virtual void onSerialPortEvent(boost::shared_ptr<AsyncSerialEvent> evt);
 
 private:
-    boost::shared_ptr<AsyncSerialPort> serialPort;
+    std::shared_ptr<AsyncSerialPort> serialPort;
     boost::thread* serialPortIOThread; //TODO: Move this back in to the AsyncSerialPort constructor
 };
 

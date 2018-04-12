@@ -20,15 +20,8 @@
 
 namespace r7 {
 
-IoServer::IoServer()
+IoServer::IoServer(const IoServerConfig& config)
 {
-    IoServerConfig config;
-    bool result = config.parseConfig();
-    if (!result) {
-        printf("Unable to parse config file.");
-//        return;
-    }
-
     //printf("Settings\n");
     //printf("  Max IPs    : %d\n", config.getMaxAllowedIps());
     //printf("  Format     : %s\n", config.getFormat().c_str());
@@ -49,18 +42,18 @@ IoServer::IoServer()
 
     try {
         //std::shared_ptr<r7::DatabaseManager> db(new r7::DatabaseManager());
-        auto dbm = std::make_shared<r7::DatabaseManager>();
+        dbm = std::make_shared<r7::DatabaseManager>(config);
         dbm->reinitSchema();
 
-        auto cm = std::make_shared<r7::ControllerManager>(dbm);
+        cm = std::make_shared<r7::ControllerManager>(dbm);
 
-        auto sm = std::make_shared<r7::ServoManager>(dbm);
+        sm = std::make_shared<r7::ServoManager>(dbm);
 
-        IoServerContext ctx(dbm, cm, sm);
+        ctx = std::make_shared<r7::IoServerContext>(dbm, cm, sm);
 
         //TODO: This is doesn't return. Eventually should move to own thread and have IoServer be the master owner.
         LOG(INFO) << "Listening on port:" << port;
-        r7::WebServerProcess webSrvr(options, ctx);
+        this->webSrvr = std::make_unique<r7::WebServerProcess>(options, *ctx);
     }
     catch (const std::exception& e) {
         LOG(ERROR) << "Error initializing. " << e.what();
@@ -70,7 +63,15 @@ IoServer::IoServer()
         LOG(ERROR) << "Error initializing.";
         system("pause");
     }
+}
 
+void IoServer::stop() {
+    if (webSrvr) {
+        this->webSrvr->stop();
+    }
+    if (cm) {
+        cm->stop();
+    }
 }
 }
 

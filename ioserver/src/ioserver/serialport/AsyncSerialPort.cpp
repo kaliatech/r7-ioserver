@@ -11,7 +11,7 @@
 
 namespace r7 {
 
-AsyncSerialPort::AsyncSerialPort(void) :
+AsyncSerialPort::AsyncSerialPort() :
     io_service(),
     port(io_service),
     serialPortOpen(false),
@@ -33,7 +33,7 @@ AsyncSerialPort::AsyncSerialPort(void) :
 }
 
 
-AsyncSerialPort::~AsyncSerialPort(void)
+AsyncSerialPort::~AsyncSerialPort()
 {
     io_service.stop();
 
@@ -99,6 +99,9 @@ void AsyncSerialPort::run_io_service()
     }
 }
 
+void AsyncSerialPort::stop_io_service() {
+    io_service.stop()    ;
+}
 
 bool AsyncSerialPort::isOpen()
 {

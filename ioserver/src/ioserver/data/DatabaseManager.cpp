@@ -3,19 +3,29 @@
 #include <fstream>
 #include <memory>
 
+#include <boost/filesystem.hpp>
+
 #include "sqlite3/sqlite3.h"
 #include "ioserver/IoServerException.h"
 // #include "JsonTransformers.h"
 
 #include "ControllerRepository.h"
 
+#include "ioserver/IoServerConfig.h"
+
 namespace r7 {
 
-DatabaseManager::DatabaseManager()
+DatabaseManager::DatabaseManager(const IoServerConfig& config)
 {
-    if (sqlite3_open("r7-ioserver.db", &this->conn) != SQLITE_OK )
+    boost::filesystem::path dbDir = boost::filesystem::path(config.getDbFilePath());
+    if (!boost::filesystem::exists(dbDir)) {
+        boost::filesystem::create_directories(dbDir);
+    }
+
+    std::string dbFilename = config.getDbFilePath() + "/ioserver.db";
+    if (sqlite3_open(dbFilename.c_str(), &this->conn) != SQLITE_OK )
     {
-        throw IoServerException("Unable to open db");
+        throw IoServerException(std::string("Unable to open db:") + config.getDbFilePath());
     }
 
     this->controllerRepo = new ControllerRepository(*this);

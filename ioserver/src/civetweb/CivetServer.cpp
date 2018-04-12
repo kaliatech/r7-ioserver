@@ -397,7 +397,7 @@ CivetServer::removeAuthHandler(const std::string &uri)
 void
 CivetServer::close()
 {
-	if (context) {
+    if (context != nullptr) {
 		mg_stop(context);
 		context = 0;
 	}

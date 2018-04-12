@@ -25,6 +25,9 @@ public:
 
     std::shared_ptr<IoController> findControllerById(const std::string& controllerId);
     void onDbmUpdate(const std::string& type, const std::string& id, const nlohmann::json& jsonObj);
+
+    void stop();
+
 public:
 
 private:

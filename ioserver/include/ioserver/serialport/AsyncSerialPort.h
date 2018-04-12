@@ -15,8 +15,8 @@ namespace r7 {
 class AsyncSerialPort : public boost::enable_shared_from_this<AsyncSerialPort>
 {
 public:
-    AsyncSerialPort(void);
-    ~AsyncSerialPort(void);
+    AsyncSerialPort();
+    ~AsyncSerialPort();
 
     /**
     * Opens a serial device.
@@ -55,6 +55,7 @@ public:
     void read(unsigned int  numBytes);
 
     void run_io_service();
+    void stop_io_service();
 
     boost::signals2::signal <void (boost::shared_ptr<AsyncSerialEvent>)>	eventSignal;
 
@@ -91,12 +92,7 @@ private:
     
     //unsigned char _readBuffer[AsyncSerialPort::readBufferSize]; ///< data read
     std::vector<unsigned char> _readDataBuffer;
-
-
 };
-
-
-
 
 }
 

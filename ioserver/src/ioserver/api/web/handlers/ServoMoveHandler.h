@@ -17,9 +17,6 @@ public:
 
     virtual ~ServoMoveHandler();
 
-protected:
-private:
-    IoController* ioController;
 };
 
 }

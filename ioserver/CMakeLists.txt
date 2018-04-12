@@ -90,7 +90,7 @@ set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 #set(Boost_USE_DEBUG_LIBS         ON)
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME     OFF)
-find_package(Boost 1.65.1 REQUIRED COMPONENTS thread system regex signals)
+find_package(Boost 1.65.1 REQUIRED COMPONENTS thread system regex signals filesystem program_options)
 # if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 # endif(Boost_FOUND)
@@ -119,10 +119,14 @@ if (WIN32)
     add_definitions(-D_WIN32_WINNT=${ver})
 endif(WIN32)
 
+# Add preprocessor flags
 add_definitions(-DELPP_THREAD_SAFE)
+add_definitions(-DELPP_STL_LOGGING) # TODO: Worthwhile?
+add_definitions(-DELPP_NO_DEFAULT_LOG_FILE)
+add_definitions(-DELPP_NO_LOG_TO_FILE)
 
 # headers included only so that they appear in visual studio project
-add_executable(IoServer
+add_executable(ioserver
 	${HEADERS_CIVETWEB}
 	${SOURCES_CIVETWEB}
 	${HEADERS_IOSERVER}
@@ -131,7 +135,7 @@ add_executable(IoServer
         ${SOURCES_MISC}
 )
 #target_compile_options(Tutorial PUBLIC -DHAVE_STRUCT_TIMESPEC)
-target_link_libraries(IoServer ${Boost_LIBRARIES} Threads::Threads ${CMAKE_DL_LIBS})
+target_link_libraries(ioserver ${Boost_LIBRARIES} Threads::Threads ${CMAKE_DL_LIBS})
 #target_link_libraries(anyExecutable Boost::program_options)
 
 #add_custom_command(TARGET IoServer POST_BUILD
@@ -139,7 +143,7 @@ target_link_libraries(IoServer ${Boost_LIBRARIES} Threads::Threads ${CMAKE_DL_LI
 #        "${CMAKE_CURRENT_SOURCE_DIR}/data"
 #        "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/data")
 
-add_custom_command(TARGET IoServer POST_BUILD
+add_custom_command(TARGET ioserver POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/data"
         "${CMAKE_CURRENT_BINARY_DIR}/data")

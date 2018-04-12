@@ -1,25 +1,40 @@
-#ifndef IoServerConfig_H
-#define IoServerConfig_H
+#pragma once
 
 #include <string>
 
+namespace r7 {
+
 class IoServerConfig
 {
-    public:
-        IoServerConfig();
-        virtual ~IoServerConfig();
-        bool parseConfig();
-        std::string getFormat() { return mFormat; }
-        void setFormat(std::string val) { mFormat = val; }
-        int32_t getMaxAllowedIps() { return mMaxAllowedIps; }
-        void setMaxAllowedIps(int32_t val) { mMaxAllowedIps = val; }
-        uint32_t getPort() { return mPort; }
-        void setPort(uint32_t port) { mPort = port; }
-    protected:
-    private:
-        std::string mFormat;
-        int32_t mMaxAllowedIps;
-        uint32_t mPort;
+public:
+    static const int DEFAULT_PORT;
+    static const std::string DEFAULT_CONFIGFILE;
+    static const std::string DEFAULT_LOGLEVEL;
+    static const std::string DEFAULT_LOGFILEPATH;
+    static const std::string DEFAULT_DBPATH;
+
+public:
+    static void configureLogging(const std::string& logLevelStr, const std::string& logFilePath);
+
+public:
+    IoServerConfig(int argc, char *argv[]);
+    virtual ~IoServerConfig();
+
+    uint32_t getPort() const { return mPort; }
+
+    std::string getLogLevel() const {return mLogLevel; }
+    std::string getLogFilePath() const {return mLogFilePath; }
+    std::string getDbFilePath() const {return mDbFilePath; }
+
+public:
+    bool isValid = false;
+
+private:
+    uint32_t mPort;
+    std::string mLogLevel;
+    std::string mLogFilePath;
+    std::string mDbFilePath;
 };
 
-#endif
+
+}

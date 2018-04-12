@@ -12,6 +12,7 @@
 namespace r7 {
 
 class ControllerRepository;
+class IoServerConfig;
 
 class DatabaseManager
 {
@@ -19,7 +20,7 @@ public:
     typedef boost::signals2::signal<void (const std::string& type, const std::string& id, const nlohmann::json& jsonObj)>  signal_dbm_update;
 
 public:
-    DatabaseManager();
+    DatabaseManager(const IoServerConfig& config);
     virtual ~DatabaseManager();
 
     // virtual void doTest() = 0;

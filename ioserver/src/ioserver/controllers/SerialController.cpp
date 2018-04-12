@@ -1,6 +1,6 @@
 #include "SerialController.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/thread.hpp>
 
 #include "../IoServerContext.h"
@@ -18,9 +18,23 @@ SerialController::SerialController() :
 
 SerialController::SerialController(const std::string& type, std::unique_ptr<nlohmann::json> jsonObj) :
     IoController(type, std::move(jsonObj)),
-    serialPort(boost::shared_ptr<AsyncSerialPort>(new AsyncSerialPort()))
+    serialPort(std::make_shared<AsyncSerialPort>())
 {
-    serialPortIOThread = new boost::thread(boost::bind(&AsyncSerialPort::run_io_service, serialPort));
+
+    // TODO: Research this. Important?
+    // https://stackoverflow.com/a/6364939/123378
+    // https://stackoverflow.com/questions/35651910/waiting-boost-asios-future-lasts-forever-after-io-service-stop
+    // https://stackoverflow.com/a/42344001/123378
+    // #include <boost/asio/signal_set.hpp>
+    // Register signal handlers so that the daemon may be shut down. You may
+    // also want to register for other signals, such as SIGHUP to trigger a
+    // re-read of a configuration file.
+    //    boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
+    //    signals.async_wait(
+    //        boost::bind(&boost::asio::io_service::stop, &io_service));
+
+    //serialPortIOThread = new boost::thread(boost::bind(&AsyncSerialPort::run_io_service), serialPort);
+    serialPortIOThread = new boost::thread(&AsyncSerialPort::run_io_service, serialPort);
     serialPort->eventSignal.connect(boost::bind(&SerialController::onSerialPortEvent, this, _1));
 }
 
@@ -34,6 +48,14 @@ void SerialController::reset() {
     if (serialPort->isOpen()) {
         this->serialPort->close();
     }
+}
+
+void SerialController::stop() {
+    if (serialPort->isOpen()) {
+        this->serialPort->close();
+    }
+    serialPort->stop_io_service();
+    serialPortIOThread->join();
 }
 
 void SerialController::moveToPulse(const Servo& servo, const int& pulse) {

@@ -27,6 +27,7 @@ public:
     virtual void onDbmUpdate(const nlohmann::json& jsonObj);
 
     virtual void reset() {};
+    virtual void stop() {};
 
 private:
     void updateFromJson();
