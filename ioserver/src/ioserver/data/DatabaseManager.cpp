@@ -23,9 +23,14 @@ DatabaseManager::DatabaseManager(const IoServerConfig& config)
     }
 
     std::string dbFilename = config.getDbFilePath() + "/ioserver.db";
+    bool dbExists = boost::filesystem::exists(dbFilename);
     if (sqlite3_open(dbFilename.c_str(), &this->conn) != SQLITE_OK )
     {
         throw IoServerException(std::string("Unable to open db:") + config.getDbFilePath());
+    }
+
+    if (!dbExists) {
+        reinitSchema();
     }
 
     this->controllerRepo = new ControllerRepository(*this);

@@ -43,7 +43,6 @@ IoServer::IoServer(const IoServerConfig& config)
     try {
         //std::shared_ptr<r7::DatabaseManager> db(new r7::DatabaseManager());
         dbm = std::make_shared<r7::DatabaseManager>(config);
-        dbm->reinitSchema();
 
         cm = std::make_shared<r7::ControllerManager>(dbm);
 
@@ -67,7 +66,7 @@ IoServer::IoServer(const IoServerConfig& config)
 
 void IoServer::stop() {
     if (webSrvr) {
-        this->webSrvr->stop();
+        webSrvr->stop();
     }
     if (cm) {
         cm->stop();
