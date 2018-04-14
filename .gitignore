@@ -3,3 +3,4 @@ project
 project-linux
 project-qt
 /project-rpi
+/CMakeLists.txt.user
