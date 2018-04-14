@@ -6,7 +6,9 @@ namespace r7 {
 
 const char* IoServerContext::LevelNames[] = { "DEBUG", "INFO", "ERROR" };
 
-IoServerContext::IoServerContext(const std::shared_ptr<DatabaseManager> dbManager, const std::shared_ptr<ControllerManager> controllerManager, const std::shared_ptr<ServoManager> servoManager) :
+IoServerContext::IoServerContext(const std::shared_ptr<DatabaseManager> dbManager,
+                                 const std::shared_ptr<ControllerManager> controllerManager,
+                                 const std::shared_ptr<ServoManager> servoManager) :
     dbm(dbManager),
     cm(controllerManager),
     sm(servoManager)

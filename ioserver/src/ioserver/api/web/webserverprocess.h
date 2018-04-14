@@ -9,19 +9,20 @@
 #include "handlers/ServoMoveHandler.h"
 #include "handlers/ExitHandler.h"
 
+#include <memory>
 
 namespace r7 {
 
 class WebServerProcess
 {
 public:
-    WebServerProcess(const char *options[], const IoServerContext& ctx);
+    WebServerProcess(const IoServerConfig& config, const IoServerContext& ctx);
 
     void stop();
 
 private:
     const IoServerContext& ctx;
-    CivetServer server;
+    std::unique_ptr<CivetServer> server;
     ClientDataHandler clientDataHandler;
     ServoMoveHandler servoMoveHandler;
     ExitHandler exitHandler;

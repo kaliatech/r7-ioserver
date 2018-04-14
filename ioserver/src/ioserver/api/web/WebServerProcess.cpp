@@ -11,6 +11,7 @@
 //#include "ioserver/IoServerConfig.h"
 #include "handlers/ClientDataHandler.h"
 #include "handlers/ServoMoveHandler.h"
+#include "ioserver/IoServerConfig.h"
 
 namespace r7 {
 
@@ -18,20 +19,32 @@ namespace r7 {
 #define DATA_URI "/data"
 #define EXIT_URI "/exit"
 
-WebServerProcess::WebServerProcess(const char *options[], const IoServerContext& ctx) :
+WebServerProcess::WebServerProcess(const IoServerConfig& config, const IoServerContext& ctx) :
     ctx(ctx),
-    server(options),
     clientDataHandler(ctx),
     servoMoveHandler(ctx),
     exitHandler()
 {
-//    server = std::make_shared(CivetServer(options));
+    std::string port(std::to_string(config.getPort()));
+    const char *options[] = {
+        "document_root", DOCUMENT_ROOT,
+        "listening_ports", port.c_str(),
+        "access_control_allow_origin", "*",
+        "access_control_allow_methods", "*",
+        "access_control_allow_headers", "*",
+        "enable_keep_alive", "yes",
+        "keep_alive_timeout_ms", "30000",
+        "tcp_nodelay", "1", // TODO: Need to test this
+        0
+    };
 
-    server.addHandler(DATA_URI, clientDataHandler);
+    server = std::make_unique<CivetServer>(options);
 
-    server.addHandler("/mbp", servoMoveHandler);
+    server->addHandler(DATA_URI, clientDataHandler);
 
-    server.addHandler(EXIT_URI, exitHandler);
+    server->addHandler("/mbp", servoMoveHandler);
+
+    server->addHandler(EXIT_URI, exitHandler);
 
     // printf("Data at http://localhost:%d%s\n", config.getPort(), DATA_URI);
     // printf("Exit at http://localhost:%d%s\n", config.getPort(), EXIT_URI);
@@ -44,7 +57,7 @@ WebServerProcess::WebServerProcess(const char *options[], const IoServerContext&
 }
 
 void WebServerProcess::stop() {
-    server.close();
+    server->close();
 }
 
 }

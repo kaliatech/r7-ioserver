@@ -22,26 +22,11 @@ namespace r7 {
 
 IoServer::IoServer(const IoServerConfig& config)
 {
-    //printf("Settings\n");
-    //printf("  Max IPs    : %d\n", config.getMaxAllowedIps());
-    //printf("  Format     : %s\n", config.getFormat().c_str());
-
-
-    std::string port(std::to_string(config.getPort()));
-    const char *options[] = {
-        "document_root", DOCUMENT_ROOT,
-        "listening_ports", port.c_str(),
-        "access_control_allow_origin", "*",
-        "access_control_allow_methods", "*",
-        "access_control_allow_headers", "*",
-        "enable_keep_alive", "yes",
-        "keep_alive_timeout_ms", "30000",
-        "tcp_nodelay", "1", // TODO: Need to test this
-        0
-    };
-
     try {
-        //std::shared_ptr<r7::DatabaseManager> db(new r7::DatabaseManager());
+        // TODO: consider converting these to stack (const references). IoServer is owner
+        // and should guarantee references to be valid until everything is stopped, including
+        // any threads.s
+
         dbm = std::make_shared<r7::DatabaseManager>(config);
 
         cm = std::make_shared<r7::ControllerManager>(dbm);
@@ -51,8 +36,8 @@ IoServer::IoServer(const IoServerConfig& config)
         ctx = std::make_shared<r7::IoServerContext>(dbm, cm, sm);
 
         //TODO: This is doesn't return. Eventually should move to own thread and have IoServer be the master owner.
-        LOG(INFO) << "Listening on port:" << port;
-        this->webSrvr = std::make_unique<r7::WebServerProcess>(options, *ctx);
+        LOG(INFO) << "Listening on port:" << config.getPort();
+        this->webSrvr = std::make_unique<r7::WebServerProcess>(config, *ctx);
     }
     catch (const std::exception& e) {
         LOG(ERROR) << "Error initializing. " << e.what();

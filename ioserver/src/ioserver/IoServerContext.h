@@ -21,7 +21,9 @@ public:
     boost::mutex log_mutex;
 
 public:
-    IoServerContext(const std::shared_ptr<DatabaseManager> dbManager, const std::shared_ptr<ControllerManager> controllerManager, const std::shared_ptr<ServoManager> servoManager);
+    IoServerContext(const std::shared_ptr<DatabaseManager> dbManager,
+                    const std::shared_ptr<ControllerManager> controllerManager,
+                    const std::shared_ptr<ServoManager> servoManager);
     ~IoServerContext(void);
 
     void log(const std::string& msg, Level level);
@@ -29,6 +31,7 @@ public:
     void info(const std::string& msg);
     void error(const std::string& msg);
 
+    const std::shared_ptr<IoServerConfig> config;
     const std::shared_ptr<DatabaseManager> dbm;
     const std::shared_ptr<ControllerManager> cm;
     const std::shared_ptr<ServoManager> sm;
