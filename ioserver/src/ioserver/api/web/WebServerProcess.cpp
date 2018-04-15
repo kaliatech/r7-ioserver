@@ -15,7 +15,7 @@
 
 namespace r7 {
 
-#define DOCUMENT_ROOT "/dev/null"
+#define DOCUMENT_ROOT "./ui"
 #define DATA_URI "/data"
 #define EXIT_URI "/exit"
 
@@ -26,6 +26,8 @@ WebServerProcess::WebServerProcess(const IoServerConfig& config, const IoServerC
     exitHandler()
 {
     std::string port(std::to_string(config.getPort()));
+
+    // "url_rewrite_patterns", "/servos=C:/Projects/r7/r7-ioserver-ui/dist/index.html",
     const char *options[] = {
         "document_root", DOCUMENT_ROOT,
         "listening_ports", port.c_str(),
@@ -46,13 +48,14 @@ WebServerProcess::WebServerProcess(const IoServerConfig& config, const IoServerC
 
     server->addHandler(EXIT_URI, exitHandler);
 
+
     // printf("Data at http://localhost:%d%s\n", config.getPort(), DATA_URI);
     // printf("Exit at http://localhost:%d%s\n", config.getPort(), EXIT_URI);
 
     //TODO: Is there a better way to keep the process open?
-//    while (!exitNow) {
-//      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-//    }
+    //    while (!exitNow) {
+    //      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    //    }
 
 }
 

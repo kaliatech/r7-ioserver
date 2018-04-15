@@ -23,7 +23,7 @@ ControllerManager::~ControllerManager() {
 }
 
 void ControllerManager::onDbmUpdate(const std::string& type, const std::string& id, const nlohmann::json& jsonObj) {
-     LOG(DEBUG) << "onDbmUpdate: " << type;
+     // LOG(DEBUG) << "onDbmUpdate: " << type;
 
      auto pair = this->controllers.find(id);
 
