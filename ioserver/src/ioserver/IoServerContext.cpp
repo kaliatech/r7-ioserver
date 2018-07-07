@@ -8,9 +8,11 @@ const char* IoServerContext::LevelNames[] = { "DEBUG", "INFO", "ERROR" };
 
 IoServerContext::IoServerContext(const std::shared_ptr<DatabaseManager> dbManager,
                                  const std::shared_ptr<ControllerManager> controllerManager,
+                                 const std::shared_ptr<SequenceManager> sequenceManager,
                                  const std::shared_ptr<ServoManager> servoManager) :
     dbm(dbManager),
     cm(controllerManager),
+    seqm(sequenceManager),
     sm(servoManager)
 {
 }

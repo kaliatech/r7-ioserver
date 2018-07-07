@@ -36,3 +36,16 @@ INSERT INTO servos (id, obj) values
 ('x', '{"id":"x", "controllerId":"primary", "pin":0, "initPulse":1500, "startPulse":500, "startDeg":0, "endPulse":2000, "endDeg":180}'),
 ('y', '{"id":"y", "controllerId":"primary", "pin":1, "initPulse":1500, "startPulse":500, "startDeg":0, "endPulse":2000, "endDeg":180}')
 ;
+
+
+DROP TABLE IF EXISTS sequences;
+CREATE TABLE IF NOT EXISTS sequences
+(
+id CHAR(50) PRIMARY KEY NOT NULL,
+obj TEXT NOT NULL
+);
+INSERT INTO sequences (id, obj) values
+('Neutral-to-RStep', '{"id":"Neutral-to-RStep", "actions":[]}'),
+('RStep-to-LStep', '{"id":"RStep-to-LStep", "actions":[]}'),
+('LStep-to-Neutral', '{"id":"LStep-to-Neutral", "actions":[]}')
+;

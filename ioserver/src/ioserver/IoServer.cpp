@@ -33,7 +33,9 @@ IoServer::IoServer(const IoServerConfig& config)
 
         sm = std::make_shared<r7::ServoManager>(dbm);
 
-        ctx = std::make_shared<r7::IoServerContext>(dbm, cm, sm);
+        seqm = std::make_shared<r7::SequenceManager>(dbm);
+
+        ctx = std::make_shared<r7::IoServerContext>(dbm, cm, seqm, sm);
 
         //TODO: This is doesn't return. Eventually should move to own thread and have IoServer be the master owner.
         LOG(INFO) << "Listening on port:" << config.getPort();

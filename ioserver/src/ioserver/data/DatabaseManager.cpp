@@ -86,7 +86,7 @@ std::vector<std::string> DatabaseManager::findAll(const std::string& type) {
 
     int rc = sqlite3_prepare_v2(db, sqlStr.c_str(), -1, &stmt, NULL);
     if (rc != SQLITE_OK)
-        throw IoServerException(sqlite3_errmsg(db));
+        throw IoServerException(sqlite3_errmsg(db), 400);
 
     std::vector<std::string> objs;
 
@@ -120,7 +120,7 @@ std::unique_ptr<nlohmann::json> DatabaseManager::findById(const std::string& typ
 
     int rc = sqlite3_prepare_v2(db, sqlStr.c_str(), -1, &stmt, NULL);
     if (rc != SQLITE_OK)
-        throw IoServerException(sqlite3_errmsg(db));
+        throw IoServerException(sqlite3_errmsg(db), 500);
 
     rc = sqlite3_bind_text(stmt, 1, id.c_str(), -1, SQLITE_STATIC);
     if (rc != SQLITE_OK) {

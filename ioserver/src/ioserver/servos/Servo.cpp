@@ -1,4 +1,4 @@
-#include "ServoManager.h"
+#include "Servo.h"
 
 #include <memory>
 #include "../data/DatabaseManager.h"

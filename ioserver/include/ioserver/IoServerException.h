@@ -15,5 +15,5 @@ public:
     const int getStatusCode() const {return this->statusCode;};
 
 private:
-    const int statusCode = -1;
+    const int statusCode = 500;
 };

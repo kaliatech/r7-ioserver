@@ -5,7 +5,9 @@
 
 #include "data/DatabaseManager.h"
 #include "controllers/ControllerManager.h"
+#include "movement/SequenceManager.h"
 #include "servos/ServoManager.h"
+
 
 namespace r7 {
 
@@ -23,6 +25,7 @@ public:
 public:
     IoServerContext(const std::shared_ptr<DatabaseManager> dbManager,
                     const std::shared_ptr<ControllerManager> controllerManager,
+                    const std::shared_ptr<SequenceManager> sequenceManager,
                     const std::shared_ptr<ServoManager> servoManager);
     ~IoServerContext(void);
 
@@ -34,6 +37,7 @@ public:
     const std::shared_ptr<IoServerConfig> config;
     const std::shared_ptr<DatabaseManager> dbm;
     const std::shared_ptr<ControllerManager> cm;
+    const std::shared_ptr<SequenceManager> seqm;
     const std::shared_ptr<ServoManager> sm;
 };
 }
