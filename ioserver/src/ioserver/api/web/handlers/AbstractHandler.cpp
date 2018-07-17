@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include "easyloggingpp/easylogging++.h"
+
 #include "nlohmann-json/json.hpp"
 #include "../MimeType.h"
 #include "ioserver/IoServerException.h"
@@ -55,6 +57,8 @@ bool AbstractHandler::handleError(struct mg_connection *conn, const int statusCo
                         MimeTypes.at(MimeType::APPLICATION_JSON).str.c_str(),
                         errMsgStr.size(),
                         errMsgStr.c_str());
+
+    LOG(ERROR) << "Error: " << errMsgStr.c_str();
 
     return true;
 }

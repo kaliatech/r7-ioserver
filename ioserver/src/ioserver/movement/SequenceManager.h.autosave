@@ -23,7 +23,7 @@ public:
     void play(const std::string& sequenceId, const float speed);
 
 private:
-    void processLoop();
+    boolean process();
 
 private:
     boost::scoped_thread<> processThread;

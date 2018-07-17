@@ -6,16 +6,31 @@ namespace r7 {
 
 using std::shared_ptr;
 
-Sequence::Sequence() :
-    jsonObj(nullptr) {
+Sequence::Sequence() {
 }
 
-Sequence::Sequence(std::unique_ptr<nlohmann::json> jsonObj) :
-    jsonObj(std::move(jsonObj)) {
+Sequence::Sequence(const nlohmann::json& jsonObj) {
+    this->fromJson(jsonObj);
 }
 
-std::string Sequence::getSequenceId() const {
-    return this->jsonObj->at("sequenceId");
+const std::string& Sequence::getSequenceId() {
+    return this->sequenceId;
 }
 
+const std::vector<Action>& Sequence::getActions() {
+    return this->actions;
+}
+
+void Sequence::fromJson(const nlohmann::json& jsonObj) {
+    this->sequenceId = jsonObj.at("id");
+
+    //TODO: Not thread safe.
+    this->actions.clear();
+
+    std::vector<nlohmann::json> actionsJson = jsonObj.at("actions");
+    for (auto it = actionsJson.begin(); it != actionsJson.end(); ++it) {
+        Action action (*it);
+        actions.push_back(action);
+    }
+}
 }

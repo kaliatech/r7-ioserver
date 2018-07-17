@@ -23,6 +23,7 @@ WebServerProcess::WebServerProcess(const IoServerConfig& config, const IoServerC
     ctx(ctx),
     clientDataHandler(ctx),
     servoMoveHandler(ctx),
+    sequenceHandler(ctx),
     exitHandler()
 {
     std::string port(std::to_string(config.getPort()));
@@ -45,6 +46,8 @@ WebServerProcess::WebServerProcess(const IoServerConfig& config, const IoServerC
     server->addHandler(DATA_URI, clientDataHandler);
 
     server->addHandler("/mbp", servoMoveHandler);
+
+    server->addHandler("/seq", sequenceHandler);
 
     server->addHandler(EXIT_URI, exitHandler);
 

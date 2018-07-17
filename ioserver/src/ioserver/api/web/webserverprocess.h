@@ -7,6 +7,7 @@
 
 #include "handlers/ClientDataHandler.h"
 #include "handlers/ServoMoveHandler.h"
+#include "handlers/SequenceHandler.h"
 #include "handlers/ExitHandler.h"
 
 #include <memory>
@@ -25,6 +26,7 @@ private:
     std::unique_ptr<CivetServer> server;
     ClientDataHandler clientDataHandler;
     ServoMoveHandler servoMoveHandler;
+    SequenceHandler sequenceHandler;
     ExitHandler exitHandler;
 };
 
