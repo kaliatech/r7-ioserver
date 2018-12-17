@@ -38,6 +38,7 @@ WebServerProcess::WebServerProcess(const IoServerConfig& config, const IoServerC
         "enable_keep_alive", "yes",
         "keep_alive_timeout_ms", "30000",
         "tcp_nodelay", "1", // TODO: Need to test this
+        "num_threads", "10",
         0
     };
 
