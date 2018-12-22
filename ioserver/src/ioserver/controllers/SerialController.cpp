@@ -83,13 +83,25 @@ void SerialController::moveToPulse(const Servo& servo, const int& pulse) {
 
     //uint8_t
 
-    int16_t pulse16 = (int16_t)pulse * 4;
     std::vector<unsigned char> data(4);
+
+    // set speed
+    //0x87, channel number, speed low bits, speed high bits
+    int16_t pulsePerMsTenths = 10;
+
+    int16_t speed16 = (int16_t)pulsePerMsTenths * 4;
+    data[0] = 0x87; // Command byte: Set Target.
+    data[1] = (unsigned char)servo.getPin(); // First data byte holds channel number.
+    data[2] = speed16 & 0x7F; // Second byte holds the lower 7 bits of target.
+    data[3] = (speed16 >> 7) & 0x7F;   // Third data byte holds the bits 7-13 of target.
+    serialPort->write(data);
+
+    // set target
+    int16_t pulse16 = (int16_t)pulse * 4;
     data[0] = 0x84; // Command byte: Set Target.
     data[1] = (unsigned char)servo.getPin(); // First data byte holds channel number.
     data[2] = pulse16 & 0x7F; // Second byte holds the lower 7 bits of target.
     data[3] = (pulse16 >> 7) & 0x7F;   // Third data byte holds the bits 7-13 of target.
-
     serialPort->write(data);
 }
 

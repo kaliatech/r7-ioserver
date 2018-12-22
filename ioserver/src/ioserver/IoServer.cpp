@@ -33,7 +33,7 @@ IoServer::IoServer(const IoServerConfig& config)
 
         sm = std::make_shared<r7::ServoManager>(dbm);
 
-        seqm = std::make_shared<r7::SequenceManager>(dbm);
+        seqm = std::make_shared<r7::SequenceManager>(dbm, sm, cm);
 
         ctx = std::make_shared<r7::IoServerContext>(dbm, cm, seqm, sm);
 
