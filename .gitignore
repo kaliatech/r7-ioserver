@@ -4,3 +4,5 @@ project-linux
 project-qt
 /project-rpi
 /CMakeLists.txt.user
+.idea
+cmake-build-debug
