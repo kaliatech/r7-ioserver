@@ -90,7 +90,7 @@ set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 #set(Boost_USE_DEBUG_LIBS         ON)
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME     OFF)
-find_package(Boost 1.65.1 REQUIRED COMPONENTS thread system regex signals filesystem program_options)
+find_package(Boost 1.81.0 REQUIRED COMPONENTS thread system regex filesystem program_options)
 # if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 # endif(Boost_FOUND)

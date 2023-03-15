@@ -23,9 +23,9 @@ void IoController::onDbmUpdate(const nlohmann::json& newJsonObj) {
 }
 
 void IoController::updateFromJson() {
-    this->id = this->jsonObj->at("id");
-    this->type = this->jsonObj->at("controllerTypeId");
-    this->ioConnStr = this->jsonObj->at("ioConnStr");
+    this->id = this->jsonObj->at("id").get<std::string>();
+    this->type = this->jsonObj->at("controllerTypeId").get<std::string>();
+    this->ioConnStr = this->jsonObj->at("ioConnStr").get<std::string>();
 
     this->reset();
 }

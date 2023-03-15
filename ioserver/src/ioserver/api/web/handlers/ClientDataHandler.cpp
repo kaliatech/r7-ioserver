@@ -134,8 +134,8 @@ bool ClientDataHandler::handlePost(CivetServer *server, struct mg_connection *co
 
         if (tokens.size() == 3) {
             //todo: creating new, extract from request or generate new
-            newId = reqJson["id"];
-            if (newId == "") {
+            newId = reqJson["id"].get<std::string>();
+            if (newId.empty()) {
                 newId = "todo-new";
             }
             prevId = newId;
@@ -143,7 +143,7 @@ bool ClientDataHandler::handlePost(CivetServer *server, struct mg_connection *co
         else {
             // patch controller, possibly changing the id
             prevId = tokens[3];
-            newId = reqJson["id"];
+            newId = reqJson["id"].get<std::string>();
         }
         //    catch (json::parse_error &e)
         //    {

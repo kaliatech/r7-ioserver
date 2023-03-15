@@ -35,7 +35,7 @@ SerialController::SerialController(const std::string& type, std::unique_ptr<nloh
 
     //serialPortIOThread = new boost::thread(boost::bind(&AsyncSerialPort::run_io_service), serialPort);
     serialPortIOThread = new boost::thread(&AsyncSerialPort::run_io_service, serialPort);
-    serialPort->eventSignal.connect(boost::bind(&SerialController::onSerialPortEvent, this, _1));
+    serialPort->eventSignal.connect(boost::bind(&SerialController::onSerialPortEvent, this, std::placeholders::_1));
 }
 
 SerialController::~SerialController()

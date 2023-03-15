@@ -22,7 +22,7 @@ const std::vector<Action>& Sequence::getActions() {
 }
 
 void Sequence::fromJson(const nlohmann::json& jsonObj) {
-    this->sequenceId = jsonObj.at("id");
+    this->sequenceId = jsonObj.at("id").get<std::string>();
 
     //TODO: Not thread safe.
     this->actions.clear();

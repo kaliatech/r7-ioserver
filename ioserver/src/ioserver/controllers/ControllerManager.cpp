@@ -15,7 +15,7 @@ ControllerManager::ControllerManager(const shared_ptr<DatabaseManager> dbm) :
     dbm(dbm),
     controllers()
 {
-    this->m_connection = dbm->connect(boost::bind(&ControllerManager::onDbmUpdate, this, _1, _2, _3));
+    this->m_connection = dbm->connect(boost::bind(&ControllerManager::onDbmUpdate, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 }
 
 ControllerManager::~ControllerManager() {
